@@ -61,6 +61,7 @@
       getDocs(colRefBlog)
         .then((result) => {
           // console.log(result);
+          blogs = [];
           result.forEach((blog) => {
             // console.log(blog.data());
             let id = blog.id;
@@ -105,22 +106,18 @@
 
         const blogtobeDel = doc(db, "blogs", id);
 
-        let deleteBTN = `${id}`;
-        console.log(blogDisplay.deleteBTN);
-
-        //             blogDisplay.deleteBTN.innerHTML = `
-        // <div id="spinner" class="spinner-border" role="status">
-        // <span class="sr-only"></span>
-        // </div>
-
-        // `;
         deleteDoc(blogtobeDel)
           .then((result) => {
-            // spinner.classList.add('d-none');
-            // deleteBTN.innerHTML = 'delete';
-            // blogDisplay.innerHTML = 'Blog has been deleted successfully'
-            getBlogs();
-
+            try {
+              spinner.classList.remove("d-none");
+              blogDisplay.innerHTML = `  <div id="spinner" class="spinner-border" role="status">
+                <span class="sr-only"></span>
+            </div>
+                `;
+              getBlogs();
+            } catch (error) {
+              console.error(error);
+            }
             console.log("Blog has been deleted successfully");
           })
           .catch((err) => {
