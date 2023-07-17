@@ -1,0 +1,60 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="file" id="inpFile">
+
+
+    <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+
+      import {getStorage, ref, uploadBytes,getDownloadURL} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCdci8yATcR-SAk0re-n6Z7ggaO9-n-ce4",
+        authDomain: "fir-learn-fa023.firebaseapp.com",
+        projectId: "fir-learn-fa023",
+        storageBucket: "fir-learn-fa023.appspot.com",
+        messagingSenderId: "1072730194542",
+        appId: "1:1072730194542:web:60872c6265b55dce769c7f",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const storage = getStorage(app);
+
+      function uploadImage(e){
+        const file = e.target.files[0]
+        
+        const random = Math.floor(Math.random() * 1000)
+        const storageRef = ref(storage, 'images/' + (file.name + random ))
+       
+        uploadBytes(storageRef, file)
+        .then((snapshot)=>{
+          console.log('Image upload succcess')
+
+          getDownloadURL(storageRef)
+          .then((downloadURL)=>{
+            console.log('DownloadUrl :', downloadURL)
+          })
+          .catch((error)=>{
+            console.log(error)
+          })
+        })
+        .catch((error)=>{
+          console.log(error)
+        })
+
+
+      }
+
+
+      inpFile.addEventListener('change', uploadImage)
+
+
+
+    </script>
+  </body>
+</html>

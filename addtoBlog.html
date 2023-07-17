@@ -1,12 +1,14 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 
 </head>
+
 <body>
     <div class="container text-center">
         <h1>Add to blog</h1>
@@ -14,22 +16,22 @@
     <div class="container">
         <div class="row">
             <form action="" id="formData">
-            <div class="col-auto">
-                <label for="title">Title:</label>
-                <input type="text" name="title" id="" class="form-control">
-            </div>
-            <div class="col-auto">
-                <label for="description">Description:</label>
-                <textarea name="description" class="form-control" id="" cols="20" rows="5"></textarea>
-            </div>
-            <div class="col-auto">
-                <label for="displayIMG">DisplayIMG:</label>
-                <input type="" name="displayIMG" id="" class="form-control">
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-primary" id="submitBTN">Submit</button>
-            </div>
-        </form>
+                <div class="col-auto">
+                    <label for="title">Title:</label>
+                    <input type="text" name="title" id="" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <label for="description">Description:</label>
+                    <textarea name="description" class="form-control" id="" cols="20" rows="5"></textarea>
+                </div>
+                <div class="col-auto">
+                    <label for="displayIMG">DisplayIMG:</label>
+                    <input type="file" name="displayIMG" id="" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" id="submitBTN">Submit</button>
+                </div>
+            </form>
         </div>
         <div class="row mt-3">
             <div class="row">
@@ -48,81 +50,116 @@
     </div>
 </body>
 <script type="module">
-      // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc , doc, getDoc, deleteDoc} from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js'
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
-    authDomain: "my-first-project-907b4.firebaseapp.com",
-    projectId: "my-first-project-907b4",
-    storageBucket: "my-first-project-907b4.appspot.com",
-    messagingSenderId: "766062875553",
-    appId: "1:766062875553:web:37dd569e73d8b27380b1e0"
-  };
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  // Initialize Firestore
-  const db = getFirestore();
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
+        authDomain: "my-first-project-907b4.firebaseapp.com",
+        projectId: "my-first-project-907b4",
+        storageBucket: "my-first-project-907b4.appspot.com",
+        messagingSenderId: "766062875553",
+        appId: "1:766062875553:web:37dd569e73d8b27380b1e0"
+    };
 
-  const colRef = collection(db, 'users');
-  const colRefBlog = collection(db, 'blogs');
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // Initialize Firestore
+    const db = getFirestore();
+    // initialize storage
+    const storage = getStorage(app);
 
-  formData.addEventListener('submit',(event)=> {
-    event.preventDefault();
-    submitBTN.innerHTML = `
-    <div id="spinner" class="spinner-border" role="status">
-            <span class="sr-only"></span>
-          </div>
 
-    `;
-    let title = formData.title.value;
-    let description = formData.description.value;
-    let image = formData.displayIMG.value;
-    let datePublished = new Date();
 
-    // console.log(blogTitle, blogDescription, blogImage);
+    const colRef = collection(db, 'users');
+    const colRefBlog = collection(db, 'blogs');
 
-    addDoc(colRefBlog, {title, description, image, datePublished})
-    .then((result) => {
-        spinner.classList.add('d-none');
-        formData.innerHTML = `Blog uploaded successfully`
-        console.log('Data uploeded');   
-    }).catch((err) => {
-        console.error(err);
-    });
+    formData.addEventListener('submit', (event) => {
+        event.preventDefault();
+        uploadImage(formData.displayIMG.files)
 
-  })
+    })
 
-  deleteBlogForm.addEventListener('submit', (event)=>{
-    event.preventDefault();
+    deleteBlogForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-    let id = deleteBlogForm.blogID.value.trim();
+        let id = deleteBlogForm.blogID.value.trim();
 
-    const blogtobeDel = doc(db, 'blogs', id);
+        const blogtobeDel = doc(db, 'blogs', id);
 
-    deleteBlogForm.deleteBTN.innerHTML = `
+        deleteBlogForm.deleteBTN.innerHTML = `
     <div id="spinner" class="spinner-border" role="status">
         <span class="sr-only"></span>
       </div>
 
     `;
-    deleteDoc(blogtobeDel)
-    .then((result) => {
-        spinner.classList.add('d-none');
-        deleteBTN.innerHTML = 'submit';
-        deleteBlogForm.innerHTML = 'Blog has been deleted successfully'
-        console.log('Blog has been deleted successfully');
-    }).catch((err) => {
-        console.error(err);
+        deleteDoc(blogtobeDel)
+            .then((result) => {
+                spinner.classList.add('d-none');
+                deleteBTN.innerHTML = 'submit';
+                deleteBlogForm.innerHTML = 'Blog has been deleted successfully'
+                console.log('Blog has been deleted successfully');
+            }).catch((err) => {
+                console.error(err);
+            });
+
     });
 
-  });
-  
+    function uploadImage(e) {
+        console.log(e);
+        const file = e[0];
+        console.log(file);
+        const random = Math.floor(Math.random() * 1000);
+
+        const storageRef = ref(storage, `images/${(file.name + random)}`);
+
+        uploadBytes(storageRef, file)
+            .then((downloadURL) => {
+                console.log('image uploaded successfully')
+
+                getDownloadURL(storageRef)
+                    .then((result) => {
+                        console.log('Download URL:', result);
+                        submitBTN.innerHTML = `
+    <div id="spinner" class="spinner-border" role="status">
+            <span class="sr-only"></span>
+          </div>
+
+    `;
+                        let title = formData.title.value;
+                        let description = formData.description.value;
+                        let image = result;
+                        let datePublished = new Date();
+
+                        console.log(image);
+
+                        
+
+                        // console.log(blogTitle, blogDescription, blogImage);
+
+                        addDoc(colRefBlog, { title, description, image, datePublished })
+                            .then((result) => {
+                                spinner.classList.add('d-none');
+                                formData.innerHTML = `Blog uploaded successfully`
+                                console.log('Data uploeded');
+                            }).catch((err) => {
+                                console.error(err);
+                            });
+
+                    }).catch((err) => {
+                        console.error(err)
+                    });
+            }).catch((err) => {
+                console.error(err);
+            });
+    }
+
 
 
 </script>

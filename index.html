@@ -1,131 +1,209 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Firebase</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-</head>
-<body>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <h1 class="text-center mt-2 mb-3">Blogs</h1>
     <div id="display"></div>
-    <div id="blogDisplay" class="container">
-        <div id="spinner" class="spinner-border" role="status">
-            <span class="sr-only"></span>
-          </div>
+    <div id="blogDisplay" class="d-flex flex-wrap gap-3">
+      <div id="spinner" class="spinner-border" role="status">
+        <span class="sr-only"></span>
+      </div>
     </div>
-</body>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc , doc, getDoc} from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    <div class="test"></div>
+  </body>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      addDoc,
+      doc,
+      getDoc,
+      deleteDoc,
+    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
-    authDomain: "my-first-project-907b4.firebaseapp.com",
-    projectId: "my-first-project-907b4",
-    storageBucket: "my-first-project-907b4.appspot.com",
-    messagingSenderId: "766062875553",
-    appId: "1:766062875553:web:37dd569e73d8b27380b1e0"
-  };
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
+      authDomain: "my-first-project-907b4.firebaseapp.com",
+      projectId: "my-first-project-907b4",
+      storageBucket: "my-first-project-907b4.appspot.com",
+      messagingSenderId: "766062875553",
+      appId: "1:766062875553:web:37dd569e73d8b27380b1e0",
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  // Initialize Firestore
-  const db = getFirestore();
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // Initialize Firestore
+    const db = getFirestore();
 
-  const colRef = collection(db, 'users');
-  const colRefBlog = collection(db, 'blogs');
+    const colRef = collection(db, "users");
+    const colRefBlog = collection(db, "blogs");
 
-  let blogs = [];
-  let users = [];
+    let blogs = [];
+    let users = [];
 
-  function getBlogs() {
-    getDocs(colRefBlog)
-    .then((result) => {
-        console.log(result);
-        result.forEach(blog => {
-            console.log(blog.data());
+    function getBlogs() {
+      getDocs(colRefBlog)
+        .then((result) => {
+          // console.log(result);
+          result.forEach((blog) => {
+            // console.log(blog.data());
             let id = blog.id;
-            blogs.push({id, ...blog.data()})
-        })   
-        spinner.classList.add('d-none')
-        displayBog();
-    }).catch((err) => {
-        console.log(err);
-    });
-  }
-  getBlogs();
-
-  function displayBog() {
-    blogDisplay.innerHTML = `<h1 class="text-center mt-2 mb-3">Blogs</h1>`;
-    blogs.forEach(blog=>{
-        let date = new Date(`${blog.datePublished.toDate()}`)
-        let formattedDate = `${date.getDay()}/${date.getDate()}/${date.getFullYear()}`
+            blogs.push({ id, ...blog.data() });
+          });
+          spinner.classList.add("d-none");
+          displayBog();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    getBlogs();
+    function displayBog() {
+      // blogDisplay.innerHTML = `<h1 class="text-center mt-2 mb-3">Blogs</h1>`;
+      blogs.forEach((blog) => {
+        let date = new Date(`${blog.datePublished.toDate()}`);
+        let formattedDate = `${date.getDay()}/${date.getDate()}/${date.getFullYear()}`;
         blogDisplay.innerHTML += `
         <div class="card mb-3" style="width: 40rem;">
         <img src="${blog.image}" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">${blog.title}</h5>
-           <p class="card-text">${blog.description.slice(0, 150)}  <a href="">Read more...</a></p>
+           <p class="card-text">${blog.description.slice(
+             0,
+             150
+           )}  <a href="">Read more...</a></p>
            <P>Date published: <span>${formattedDate}</span></p>
+            <button class="btn btn-danger" id="${blog.id}">Delete</button>
         </div>
       </div>    
 
         `;
-    })
-  }
+      });
+    }
 
-  function getDatafromDB() {
-    getDocs(colRef)
-  .then((snapshot) => {
-    console.log(snapshot); 
-    snapshot.forEach(doc => {
-        let id = doc.id;
-        users.push({id, ...doc.data()})
+    //Delete Blog
+    blogDisplay.addEventListener("click", (e) => {
+      if (e.target.nodeName === "BUTTON") {
+        let id = e.target.id;
+        console.log(id);
+
+        const blogtobeDel = doc(db, "blogs", id);
+
+        let deleteBTN = `${id}`;
+        console.log(blogDisplay.deleteBTN);
+
+        //             blogDisplay.deleteBTN.innerHTML = `
+        // <div id="spinner" class="spinner-border" role="status">
+        // <span class="sr-only"></span>
+        // </div>
+
+        // `;
+        deleteDoc(blogtobeDel)
+          .then((result) => {
+            // spinner.classList.add('d-none');
+            // deleteBTN.innerHTML = 'delete';
+            // blogDisplay.innerHTML = 'Blog has been deleted successfully'
+            getBlogs();
+
+            console.log("Blog has been deleted successfully");
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      } else {
+        return;
+      }
     });
-    console.log(users);
-    display.innerHTML = `<h1>List of users</h1>`;
-    users.forEach((user)=>{
-        display.innerHTML += `
+    function getDatafromDB() {
+      getDocs(colRef)
+        .then((snapshot) => {
+          console.log(snapshot);
+          snapshot.forEach((doc) => {
+            let id = doc.id;
+            users.push({ id, ...doc.data() });
+          });
+          console.log(users);
+          display.innerHTML = `<h1>List of users</h1>`;
+          users.forEach((user) => {
+            display.innerHTML += `
         <p>Username :${user.Name}</p>
         <p>Career :${user.career}</p>
         `;
-    })
-  }).catch((err) => {
-    console.error('No DB');
-  });
+          });
+        })
+        .catch((err) => {
+          console.error("No DB");
+        });
+    }
 
-  }
+    function addBlog(params) {
+      addDoc(colRefBlog, {})
+        .then((result) => {
+          console.log("Data uploeded");
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
 
-  function addBlog(params) {
-    addDoc(colRefBlog, {})
-    .then((result) => {
-        console.log('Data uploeded');   
-    }).catch((err) => {
-        console.error(err)
-    });
-  }
+    function getBlogDetails(params) {
+      doc(colRef, "blogs", id)
+        .then((result) => {
+          console.log(result.data());
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
 
-  function getBlogDetails(params) {
-    doc(colRef, 'blogs', id)
-    .then((result) => {
-        console.log(result.data());
-    }).catch((err) => {
-        console.log(err);
-    });
-  }
+    function deleteBlog(blogID) {
+      let id = blogID;
 
-  function deleteBlog(params) {
-    
-  }
-//   getDatafromDB();
+      const blogtobeDel = doc(db, "blogs", id);
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      let deleteBTN = `deleteBTN${blogID}`;
+
+      blogDisplay.deleteBTN.innerHTML = `
+<div id="spinner" class="spinner-border" role="status">
+<span class="sr-only"></span>
+</div>
+
+`;
+      deleteDoc(blogtobeDel)
+        .then((result) => {
+          spinner.classList.add("d-none");
+          deleteBTN.innerHTML = "delete";
+          blogDisplay.innerHTML = "Blog has been deleted successfully";
+          console.log("Blog has been deleted successfully");
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+
+      getBlogs();
+    }
+
+    //   getDatafromDB();
+  </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-    crossorigin="anonymous"></script>
-
+    crossorigin="anonymous"
+  ></script>
 </html>

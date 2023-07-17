@@ -1,0 +1,65 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <form action="" id="uImgForm">
+                <div>
+                    <label for="imgFile"></label>
+                    <input type="file" name="imgFile" id="">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+
+      import { getStorage, ref, uploadBytes, getDownloadURL} from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js'
+
+      const firebaseConfig = {
+    apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
+    authDomain: "my-first-project-907b4.firebaseapp.com",
+    projectId: "my-first-project-907b4",
+    storageBucket: "my-first-project-907b4.appspot.com",
+    messagingSenderId: "766062875553",
+    appId: "1:766062875553:web:37dd569e73d8b27380b1e0"
+  };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    // initialize storage
+    const storage = getStorage(app);
+
+    function uploadImage(e) {
+        const file = e.target.files[0];
+        console.log(file);
+        const random = Math.floor(Math.random() * 1000);
+
+        const storageRef = ref(storage, `images/${(file.name + random)}`);
+
+        uploadBytes(storageRef, file)
+        .then((downloadURL) => {
+            console.log('image uploaded successfully' )
+
+                getDownloadURL(storageRef)
+                .then((result) => {
+                    console.log('Download URL:', result);
+                }).catch((err) => {
+                    console.error(err)
+                });
+        }).catch((err) => {
+            console.error(err);
+        });
+    }
+    
+    uImgForm.addEventListener('change', uploadImage);
+
+
+</script>
+</html>
