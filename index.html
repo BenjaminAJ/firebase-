@@ -1,206 +1,295 @@
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Firebase</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-      crossorigin="anonymous"
-    />
-  </head>
 
-  <body>
-    <h1 class="text-center mt-2 mb-3">Blogs</h1>
-    <div id="display"></div>
-    <div id="blogDisplay" class="d-flex flex-wrap gap-3">
-      <div id="spinner" class="spinner-border" role="status">
-        <span class="sr-only"></span>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firebase</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+</head>
+
+<body>
+  <!-- <h1 class="text-center mt-2 mb-3">Blogs</h1> -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Blog</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex" id="loginForm">
+          <input class="form-control me-2" name="email" type="text" placeholder="email">
+          <input class="form-control me-2" name="password" type="password" placeholder="passworrd">
+          <button class="btn btn-outline-success">Login</button>
+          <button class="btn btn-outline-success">Create Account</button>
+        </form>
       </div>
     </div>
-    <div class="test"></div>
-  </body>
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      addDoc,
-      doc,
-      getDoc,
-      deleteDoc,
-    } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
+  </nav>
 
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
-      authDomain: "my-first-project-907b4.firebaseapp.com",
-      projectId: "my-first-project-907b4",
-      storageBucket: "my-first-project-907b4.appspot.com",
-      messagingSenderId: "766062875553",
-      appId: "1:766062875553:web:37dd569e73d8b27380b1e0",
-    };
+  <div id="display"></div>
+  <div id="blogDisplay" class="d-flex flex-wrap gap-3">
+    <div id="spinner" class="spinner-border" role="status">
+      <span class="sr-only"></span>
+    </div>
+  </div>
+  <div class="test"></div>
+</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    addDoc,
+    doc,
+    getDoc,
+    deleteDoc,
+  } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    // Initialize Firestore
-    const db = getFirestore();
 
-    const colRef = collection(db, "users");
-    const colRefBlog = collection(db, "blogs");
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-    let blogs = [];
-    let users = [];
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
+    authDomain: "my-first-project-907b4.firebaseapp.com",
+    projectId: "my-first-project-907b4",
+    storageBucket: "my-first-project-907b4.appspot.com",
+    messagingSenderId: "766062875553",
+    appId: "1:766062875553:web:37dd569e73d8b27380b1e0",
+  };
 
-    function getBlogs() {
-      getDocs(colRefBlog)
-        .then((result) => {
-          // console.log(result);
-          blogs = [];
-          result.forEach((blog) => {
-            // console.log(blog.data());
-            let id = blog.id;
-            blogs.push({ id, ...blog.data() });
-          });
-          spinner.classList.add("d-none");
-          displayBog();
-        })
-        .catch((err) => {
-          console.log(err);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  // Initialize Firestore
+  const db = getFirestore();
+  //AUth
+  const auth = getAuth();
+
+  const colRef = collection(db, "users");
+  const colRefBlog = collection(db, "blogs");
+
+  let blogs = [];
+  let users = [];
+
+  //get Blogs from DB
+  function getBlogs() {
+    getDocs(colRefBlog)
+      .then((result) => {
+        // console.log(result);
+        blogs = [];
+        result.forEach((blog) => {
+          // console.log(blog.data());
+          let id = blog.id;
+          blogs.push({ id, ...blog.data() });
         });
-    }
-    getBlogs();
-    function displayBog() {
-      // blogDisplay.innerHTML = `<h1 class="text-center mt-2 mb-3">Blogs</h1>`;
-      blogs.forEach((blog) => {
-        let date = new Date(`${blog.datePublished.toDate()}`);
-        let formattedDate = `${date.getDay()}/${date.getDate()}/${date.getFullYear()}`;
-        blogDisplay.innerHTML += `
+        spinner.classList.add("d-none");
+        displayBog();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  getBlogs();
+
+  //Display blogs
+  function displayBog() {
+    // blogDisplay.innerHTML = `<h1 class="text-center mt-2 mb-3">Blogs</h1>`;
+    blogs.forEach((blog) => {
+      let date = new Date(`${blog.datePublished.toDate()}`);
+      let formattedDate = `${date.getDay()}/${date.getDate()}/${date.getFullYear()}`;
+      blogDisplay.innerHTML += `
         <div class="card mb-3" style="width: 40rem;">
         <img src="${blog.image}" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title">${blog.title}</h5>
            <p class="card-text">${blog.description.slice(
-             0,
-             150
-           )}  <a href="">Read more...</a></p>
+        0,
+        150
+      )}  <a href="">Read more...</a></p>
            <P>Date published: <span>${formattedDate}</span></p>
             <button class="btn btn-danger" id="${blog.id}">Delete</button>
         </div>
       </div>    
 
         `;
-      });
-    }
-
-    //Delete Blog
-    blogDisplay.addEventListener("click", (e) => {
-      if (e.target.nodeName === "BUTTON") {
-        let id = e.target.id;
-        console.log(id);
-
-        const blogtobeDel = doc(db, "blogs", id);
-
-        deleteDoc(blogtobeDel)
-          .then((result) => {
-            try {
-              spinner.classList.remove("d-none");
-              blogDisplay.innerHTML = `  <div id="spinner" class="spinner-border" role="status">
-                <span class="sr-only"></span>
-            </div>
-                `;
-              getBlogs();
-            } catch (error) {
-              console.error(error);
-            }
-            console.log("Blog has been deleted successfully");
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      } else {
-        return;
-      }
     });
-    function getDatafromDB() {
-      getDocs(colRef)
-        .then((snapshot) => {
-          console.log(snapshot);
-          snapshot.forEach((doc) => {
-            let id = doc.id;
-            users.push({ id, ...doc.data() });
-          });
-          console.log(users);
-          display.innerHTML = `<h1>List of users</h1>`;
-          users.forEach((user) => {
-            display.innerHTML += `
-        <p>Username :${user.Name}</p>
-        <p>Career :${user.career}</p>
-        `;
-          });
-        })
-        .catch((err) => {
-          console.error("No DB");
-        });
-    }
+  }
 
-    function addBlog(params) {
-      addDoc(colRefBlog, {})
-        .then((result) => {
-          console.log("Data uploeded");
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-
-    function getBlogDetails(params) {
-      doc(colRef, "blogs", id)
-        .then((result) => {
-          console.log(result.data());
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-
-    function deleteBlog(blogID) {
-      let id = blogID;
+  //Delete Blog
+  blogDisplay.addEventListener("click", (e) => {
+    if (e.target.nodeName === "BUTTON") {
+      let id = e.target.id;
+      console.log(id);
 
       const blogtobeDel = doc(db, "blogs", id);
 
-      let deleteBTN = `deleteBTN${blogID}`;
-
-      blogDisplay.deleteBTN.innerHTML = `
-<div id="spinner" class="spinner-border" role="status">
-<span class="sr-only"></span>
-</div>
-
-`;
       deleteDoc(blogtobeDel)
         .then((result) => {
-          spinner.classList.add("d-none");
-          deleteBTN.innerHTML = "delete";
-          blogDisplay.innerHTML = "Blog has been deleted successfully";
+          try {
+            spinner.classList.remove("d-none");
+            blogDisplay.innerHTML = `  <div id="spinner" class="spinner-border" role="status">
+                <span class="sr-only"></span>
+            </div>
+                `;
+            getBlogs();
+          } catch (error) {
+            console.error(error);
+          }
           console.log("Blog has been deleted successfully");
         })
         .catch((err) => {
           console.error(err);
         });
+    } else {
+      return;
+    }
+  });
 
-      getBlogs();
+  // function getDatafromDB() {
+  //   getDocs(colRef)
+  //     .then((snapshot) => {
+  //       console.log(snapshot);
+  //       snapshot.forEach((doc) => {
+  //         let id = doc.id;
+  //         users.push({ id, ...doc.data() });
+  //       });
+  //       console.log(users);
+  //       display.innerHTML = `<h1>List of users</h1>`;
+  //       users.forEach((user) => {
+  //         display.innerHTML += `
+  //     <p>Username :${user.Name}</p>
+  //     <p>Career :${user.career}</p>
+  //     `;
+  //       });
+  //     })
+  //     .catch((err) => {
+  //       console.error("No DB");
+  //     });
+  // }
+
+  function addBlog(params) {
+    addDoc(colRefBlog, {})
+      .then((result) => {
+        console.log("Data uploeded");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  function getBlogDetails(params) {
+    doc(colRef, "blogs", id)
+      .then((result) => {
+        console.log(result.data());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  // loginUSer
+  loginForm.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    let email = loginForm.email.value;
+    let password = loginForm.password.value;
+
+    if (event.target.innerHTML === 'Login') {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          // ...
+          loginForm.innerHTML = `
+          <button class="btn btn-primary" onclick="signUserOut()">Sign Out</button>
+        `;
+
+          console.log('User signed In');
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage);
+        });
+    }
+    if (event.target.innerHTML === 'Create Account') {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          // ...
+          console.log('user created and signed in');
+          loginForm.innerHTML = `
+          <button class="btn btn-primary" onclick="signUserOut()">Sign Out</button>
+        `;
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage);
+          // ..
+        });
+
     }
 
-    //   getDatafromDB();
-  </script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-    crossorigin="anonymous"
-  ></script>
+
+
+  })
+
+  function signUserOut(event) {
+    event.preventDefault();
+    signOut(auth).then(() => {
+      // Sign-out successful.
+      loginForm.innerHTML = `
+      <input class="form-control me-2" name="email" type="text" placeholder="email">
+          <input class="form-control me-2" name="password" type="password" placeholder="passworrd">
+          <button class="btn btn-outline-success">Login</button>
+
+      `;
+      console.log('User Signed Out');
+    }).catch((error) => {
+      // An error happened.
+      console.error(error);
+    });
+  }
+
+  function checkUserSignedIn() {
+
+  }
+  checkUserSignedIn()
+//   getDatafromDB();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
 </html>
