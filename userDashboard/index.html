@@ -1,0 +1,175 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sign in -->
+  <div class="container mt-3">
+    <h1>Register Here</h1>
+    <form id="registerForm">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" name="username" id="username" aria-describedby="emailHelp">
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp">
+        <div id="emailHelp" class="form-text">We'll never share your details with anyone else.</div>
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" id="exampleInputPassword1">
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1"><span><a href=""> Accept terms and
+              conditions</a></span></label>
+      </div>
+      <button class="btn btn-primary" id="submitBTN">Submit</button>
+    </form>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script type="module" src="./js/config.js"></script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    addDoc,
+    doc,
+    getDoc,
+    deleteDoc,
+  } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7DSYmE-S2RR6JSSYqEuceSKTUu68V41Q",
+    authDomain: "my-first-project-907b4.firebaseapp.com",
+    projectId: "my-first-project-907b4",
+    storageBucket: "my-first-project-907b4.appspot.com",
+    messagingSenderId: "766062875553",
+    appId: "1:766062875553:web:7756038c2a2dd81b80b1e0"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  //Initialize Firestore
+  const db = getFirestore(app);
+
+  //Initialize Collection reference for users db
+  const colUserRef = collection(db, 'users');
+
+  //Initialize auth
+  const auth = getAuth();
+
+
+  registerForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    let email = registerForm.email.value;
+    let username = registerForm.username.value;
+    let password = registerForm.password.value;
+
+    submitBTN.innerHTML = `
+    <div class="spinner-border" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+    `;
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((result) => {
+        console.log('Account has been created successfully');
+        submitBTN.innerHTML = 'Account created successfully';
+
+        updateProfile(auth.currentUser, {
+          displayName: username, photoURL: "https://example.com/jane-q-user/profile.jpg"
+        }).then(() => {
+          // Profile updated!
+          // ...
+          console.log('Profile Updated');
+
+          // Add a new document with a generated id.
+          addDoc(collection(db, "users"), {
+            name : username,
+            email : email, 
+            userID : auth.currentUser.uid
+            
+          })
+          .then((result) => {
+            console.log('User added to database');
+          }).catch((err) => {
+            console.log(err);
+          });
+          console.log("Document written with ID: ", userID);
+        }).catch((error) => {
+          // An error occurred
+          // ...
+          console.error(error);
+        }); setTimeout(() => {
+          window.location.href = './dashboard.html';
+        }, 6000);
+      }).catch((err) => {
+        console.error(err);
+        submitBTN.innerHTML = err.message;
+      });
+  })
+
+
+</script>
+
+</html>
